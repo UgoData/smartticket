@@ -4,8 +4,11 @@ import unicodedata
 from nltk.corpus import stopwords
 from nltk.stem.snowball import FrenchStemmer
 
-def normaliz(row):
+
+class Normalizer:
     """ Normalize Text """
+    def __init__(self, row):
+        self.row = row
 
     list_stop_word_french=['alors','au','aucuns','aussi','autre','avant','avec','avoir','bon','car','ce','cela','ces','ceux','chaque',
                            'ci','comme','comment','dans','des','du','dedans','dehors','depuis','devrait','doit','donc','dos','début',
@@ -31,13 +34,15 @@ def normaliz(row):
     # Stemming of words
     stemmer = FrenchStemmer()
 
-    # to lower case
-    str1 = row.lower()
-    # print 'low_case : ', str1
+    def to_lower(self, row):
+        """ to lower case """
+        return row.lower()
+        # print 'low_case : ', str1
 
-    # Suppress number
-    str1 = reg_numb.sub('', str1)
-    # print 'only_letters : ', str1
+    def suppress_number(self):
+        """ Suppress number """
+        return reg_numb.sub('', str1)
+        # print 'only_letters : ', str1
 
     # Suppress apostrophe
     str1 = reg_apos.sub('', str1)
