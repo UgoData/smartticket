@@ -62,5 +62,11 @@ class TestLoadCleanData(TestCase):
         l = LoadCleanData()
         df1, df2 = l.load_clean_data()
 
+    def test_concat_dfs(self):
+        l = LoadCleanData()
+        df1, df2 = l.load_clean_data()
+        print l.concat_dfs(df1, df2).shape[0]
+        self.assertEqual(26958, l.concat_dfs(df1, df2).shape[0], "Problem with Concat dfs")
+
     #def test_print_outputs(self):
         #self.fail()

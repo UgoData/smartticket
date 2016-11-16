@@ -63,3 +63,9 @@ class TestNormalizer(TestCase):
         n = Normalizer()
         res = n.clean_duplicate_string(str1)
         self.assertEqual('a test', res, "Problem with clean Duplicate")
+
+    def test_keep_first_letters(self):
+        str1 = 'a test expose test'
+        n = Normalizer()
+        res = n.keep_first_letters(str1, 3)
+        self.assertEqual('a tes exp', res, "Problem with keep first letter")

@@ -78,6 +78,16 @@ class LoadCleanData:
         self.add_merge_columns(df_open_bf, col_to_add_to_product_name)
         return df_open_ff, df_open_bf
 
+    def concat_dfs(self, df1, df2):
+        """ Concat up and under two dataframes"""
+        df1 = df1[['merge_col','cat_purchease']]
+        df2['cat_purchease'] = 'hygiene_beaute'
+        df2 = df2[['merge_col', 'cat_purchease']]
+        return pd.concat([df1, df2], ignore_index=True)
+
+    def load_and_concat(self):
+        return self.concat_dfs(self.load_clean_data()[0], self.load_clean_data()[1])
+
     # ------ PRINT -------
     def print_outputs(self):
         df_classes = self.load_classes()

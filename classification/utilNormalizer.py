@@ -98,9 +98,14 @@ class Normalizer:
         # print 'merge_list : ', ' '.join(str1)
         return ' '.join(str2)
 
-    def clean_duplicate_string(str1):
+    def clean_duplicate_string(self, str1):
         """ Suppress duplicate word into a sentence. Ordered"""
         return ' '.join(list(OrderedDict.fromkeys(str1.split())))
 
-    def keep_first_letters(str1):
-        """ From a string to all the words """
+    def keep_first_letters(self, str1, nb_first):
+        """
+        From a sentence, create columns with only first letters of the words.
+        if words smaller keep all characters
+        """
+        res = " ".join([word[:nb_first] for word in str1.split()])
+        return self.clean_duplicate_string(res)
