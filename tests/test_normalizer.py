@@ -26,7 +26,8 @@ class TestNormalizer(TestCase):
         str1 = 'test épée mangeons aujourd\'hui    '
         n = Normalizer()
         res = n.suppress_punctuation(str1)
-        print str1 + '->' + res
+        print type(res)
+        print res
         self.assertEqual('test épée mangeons aujourdhui    ', res, "Problem with suppress punctuation")
 
     def test_suppress_stopword(self):
@@ -40,6 +41,7 @@ class TestNormalizer(TestCase):
         n = Normalizer()
         res_temp = n.suppress_stopword(str1)
         res = n.suppress_accent(res_temp)
+        print res
         self.assertEqual('epee', res[1], "Problem with suppress accent")
 
     def test_stemm_words(self):
@@ -55,3 +57,9 @@ class TestNormalizer(TestCase):
         n = Normalizer()
         res = n.end_to_end_normalize(str1)
         self.assertEqual('test epe mangeon aujourdhui', res, "Problem with end to end")
+
+    def test_clean_duplicate_string(self):
+        str1 = 'a a test test test'
+        n = Normalizer()
+        res = n.clean_duplicate_string(str1)
+        self.assertEqual('a test', res, "Problem with clean Duplicate")

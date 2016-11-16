@@ -3,6 +3,7 @@ import re
 import unicodedata
 from nltk.corpus import stopwords
 from nltk.stem.snowball import FrenchStemmer
+from collections import OrderedDict
 
 
 class Normalizer:
@@ -35,7 +36,7 @@ class Normalizer:
         # Suppress number
         self.reg_numb = re.compile('[^\D]')
         # Suppress punctuation
-        self.reg_ponct = re.compile('[^a-z 0-9ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ²°Ø×ßŠ”�œ…]')
+        self.reg_ponct = re.compile('[^a-z 0-9ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ²°Ø×ßŠ”�œÐ…]')
         # Suppress apostrophe
         self.reg_apos = re.compile('( l\')|( d\')|( n\')|( m\')')
 
@@ -74,14 +75,14 @@ class Normalizer:
 
     def suppress_accent(self, str1):
         """ Suppress accent """
-        # return [word.encode('ascii', 'ignore') for word in self.str1]
-        return [unicodedata.normalize('NFD', unicode(word, 'utf-8')).encode('ascii', 'ignore') for word in str1]
+        # return [word.encode('ascii', 'ignore') for word in str1]
+        str2 = [word for word in str1 if word != '']
+        return [unicodedata.normalize('NFKD', unicode(word, 'utf-8')).encode('ascii', 'ignore') for word in str2]
         # print 'no_accent : ', str1
 
     def stemm_words(self, str1):
         """ Stemming of words """
-        str2 = [word for word in str1 if word != '']
-        return [self.stemmer.stem(word) for word in str2]
+        return [self.stemmer.stem(word) for word in str1]
         # print 'stemming : ', str1
 
     def end_to_end_normalize(self, str1):
@@ -96,3 +97,10 @@ class Normalizer:
                             ))))))
         # print 'merge_list : ', ' '.join(str1)
         return ' '.join(str2)
+
+    def clean_duplicate_string(str1):
+        """ Suppress duplicate word into a sentence. Ordered"""
+        return ' '.join(list(OrderedDict.fromkeys(str1.split())))
+
+    def keep_first_letters(str1):
+        """ From a string to all the words """

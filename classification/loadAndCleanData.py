@@ -75,6 +75,7 @@ class LoadCleanData:
         col_to_add_to_product_name = ["generic_name", "brands_tags"]
         self.add_merge_columns(df_open_ff, col_to_add_to_product_name)
         df_open_bf = self.select_col_beauty_fact(self.load_open_beauty_facts())
+        self.add_merge_columns(df_open_bf, col_to_add_to_product_name)
         return df_open_ff, df_open_bf
 
     # ------ PRINT -------
@@ -102,4 +103,4 @@ class LoadCleanData:
         print df_open_bf.head()
         # print only_fr_data_from_open_ff(df_open_ff)["countries_fr"].value_counts()
 
-LoadCleanData().print_outputs()
+# LoadCleanData().print_outputs()
