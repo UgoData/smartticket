@@ -23,6 +23,7 @@ p = ProcessText()
 l = LoadCleanData()
 df = p.clean_text_data(l.load_and_concat())
 print "Size of df :", df.shape
+print "test"
 tfidf_trained = TfIdf().tf_idf(df)
 X_df = tfidf_trained.transform(df['merge_final'])
 print "Sike x_df :", X_df.shape
