@@ -1,12 +1,15 @@
 # coding: utf-8
 
 # ------ IMPORTS -----
-import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.ensemble import RandomForestClassifier
-from processTextData import ProcessText
-from loadAndCleanData import LoadCleanData
 import warnings
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import GridSearchCV
+
+from loadAndCleanData import LoadCleanData
+from processTextData import ProcessText
+
 warnings.filterwarnings("ignore")
 
 
@@ -45,5 +48,9 @@ class Classification:
         return clf.predict(receipt_tfidf)
 
 clf = Classification().rfClassif(X_df, Y_df)
-print Classification().rfPredict(clf, tfidf_trained, ['pain maxi burger','HAR. VERT XF'])
-
+clf = GridSearchCV(SVC(C=1), tuned_parameters, cv=5)
+scores = cross_val_score(clf, X_df, Y_df, cv=5)
+print scores
+print clf.score(X_df, Y_df)
+print Classification().rfPredict(clf, tfidf_trained,
+                                 ['pain maxi burger', 'HAR. VERT XF', 'GAL. MAIS BIO', 'PAVE ROSETTE'])
