@@ -1,50 +1,45 @@
 # coding: utf-8
 
 # ------ IMPORTS -----
-import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import GridSearchCV
 from processTextData import ProcessText
 from loadAndCleanData import LoadCleanData
 import warnings
 warnings.filterwarnings("ignore")
 
 
-class TfIdf:
-
-    def __init__(self):
-        self.data = []
-
-    def tf_idf(self, df):
-        vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5)
-        return vectorizer.fit(df['merge_final'])
-
 p = ProcessText()
 l = LoadCleanData()
-df = p.clean_text_data(l.load_and_concat())
-print "Size of df :", df.shape
-print "test"
-tfidf_trained = TfIdf().tf_idf(df)
-X_df = tfidf_trained.transform(df['merge_final'])
-print "Sike x_df :", X_df.shape
-
-Y_df = l.load_and_concat()['cat_purchease']
-print "Sike y_df :", Y_df.shape
 
 class Classification:
     def __init__(self):
-        self.data = []
+        return None
 
-    def rfClassif(self, X, y):
-        """ Classification Random Forest avec input tf_idf"""
-        clf = RandomForestClassifier(n_estimators=10)
-        return clf.fit(X, y)
+    def rfPipelineClassif(self, df,params_grid,num_folds=3):
+        """ Classification pipeline with TFIDF and Random Forest avec input raw df"""
+        X_df = p.clean_text_data(df)['merge_final']
+        y = df['cat_purchease']
+        vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5, min_df=0.005, ngram_range=(1, 2))
+        rf = RandomForestClassifier(n_estimators=10,random_state=123)
+        pipe = Pipeline([('tfidf', vectorizer), ('rf', rf)])
+        model=GridSearchCV(pipe,param_grid=params_grid,n_jobs=1,cv=num_folds,verbose=1,refit=True)
 
-    def rfPredict(self, clf, tfidf, receipt_line):
-        """ Prediction of the category of receipt_line"""
-        receipt_tfidf = tfidf.transform(receipt_line)
-        return clf.predict(receipt_tfidf)
+        return (model.fit(X_df, y),model.cv_results_)
 
-clf = Classification().rfClassif(X_df, Y_df)
-print Classification().rfPredict(clf, tfidf_trained, ['pain maxi burger','HAR. VERT XF'])
+
+# Load all dataset
+df=l.load_and_concat()
+print "Size of df :", df.shape
+
+params_grid={'tfidf__min_df':[0,0.0005,0.001],
+             'rf__min_samples_leaf': [1,3,5],
+             }
+
+(model,results) = Classification().rfPipelineClassif(df,params_grid,num_folds=3)
+print results
+print model.predict(['pain maxi burger','HAR. VERT XF'])
+
 

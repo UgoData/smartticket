@@ -72,7 +72,7 @@ class LoadCleanData:
         """ Load and clean the data for Food and Beauty"""
         df_open_ff_raw = self.load_open_food_facts()
         df_open_ff = self.only_fr_data_from_open_ff(df_open_ff_raw)
-        col_to_add_to_product_name = ["generic_name", "brands_tags"]
+        col_to_add_to_product_name = ["generic_name"]
         self.add_merge_columns(df_open_ff, col_to_add_to_product_name)
         df_open_bf = self.select_col_beauty_fact(self.load_open_beauty_facts())
         self.add_merge_columns(df_open_bf, col_to_add_to_product_name)
@@ -80,9 +80,9 @@ class LoadCleanData:
 
     def concat_dfs(self, df1, df2):
         """ Concat up and under two dataframes"""
-        df1 = df1[['merge_col','cat_purchease']]
+        df1 = df1[['merge_col','brands_tags','cat_purchease']]
         df2['cat_purchease'] = 'hygiene_beaute'
-        df2 = df2[['merge_col', 'cat_purchease']]
+        df2 = df2[['merge_col','brands_tags', 'cat_purchease']]
         return pd.concat([df1, df2], ignore_index=True)
 
     def load_and_concat(self):
