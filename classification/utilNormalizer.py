@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import re
 import unicodedata
+from collections import OrderedDict
+
 from nltk.corpus import stopwords
 from nltk.stem.snowball import FrenchStemmer
-from collections import OrderedDict
 
 
 class Normalizer:
