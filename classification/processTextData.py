@@ -5,6 +5,8 @@ import warnings
 
 from utilNormalizer import Normalizer
 
+print "INTO PROCESS DATA"
+
 warnings.filterwarnings("ignore")
 
 

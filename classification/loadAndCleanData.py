@@ -7,6 +7,7 @@ import pandas as pd
 
 warnings.filterwarnings("ignore")
 
+print 'INTO LOAD DATA'
 
 class LoadCleanData:
 

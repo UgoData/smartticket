@@ -3,8 +3,9 @@ import re
 import unicodedata
 from collections import OrderedDict
 
-from nltk.corpus import stopwords
 from nltk.stem.snowball import FrenchStemmer
+
+print "INTO UTILS"
 
 
 class Normalizer:
@@ -42,9 +43,7 @@ class Normalizer:
         self.reg_apos = re.compile('( l\')|( d\')|( n\')|( m\')')
 
         # Suppress stop words
-        self.french_stopwords_ini = stopwords.words('french')
-        self.french_stopwords_ini.extend(self.list_stop_word_french)
-        self.french_stopwords = set(self.french_stopwords_ini)
+        self.french_stopwords = set(self.list_stop_word_french)
 
         # Stemming of words
         self.stemmer = FrenchStemmer()
@@ -119,3 +118,15 @@ class Normalizer:
         """
         res = " ".join([word[:nb_first] for word in str1.split() if len(str1)>=nb_first])
         return self.clean_duplicate_string(res)
+
+    def from_dict_to_list(self, dict):
+        list_result = []
+        for k in dict.keys():
+            list_result.append(k)
+        return list_result
+
+    def from_two_lists_to_dict(self, list_key, list_value):
+        dict_result = {}
+        for pos, k in enumerate(list_key):
+            dict_result[k] = list_value[pos]
+        return dict_result

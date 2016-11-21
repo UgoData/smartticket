@@ -31,7 +31,7 @@
     {
       "ocr_raw_description": "BOUTEILLE 33CL",
       "ocr_processed_description": "BOUTEILLE 33CL",
-      "quantity": 1
+      "quantity": 1,
       "unit_price": 1.59,
       "total_price": 1.59,
       "category_name": "NON RECONNU",
