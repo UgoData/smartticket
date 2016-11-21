@@ -1,15 +1,16 @@
 # coding: utf-8
 
 # ------ IMPORTS -----
-import warnings
-
 import pandas as pd
-
+import warnings
 warnings.filterwarnings("ignore")
 
 
 class LoadCleanData:
-    # TESTTTESTTESTETSTETSTETS
+
+    def __init__(self):
+        self.data = []
+
 # ------LOAD DATA -------
     @staticmethod
     def load_classes():
@@ -79,9 +80,9 @@ class LoadCleanData:
 
     def concat_dfs(self, df1, df2):
         """ Concat up and under two dataframes"""
-        df1 = df1[['merge_col', 'brands_tags', 'cat_purchease']]
+        df1 = df1[['merge_col','brands_tags','cat_purchease']]
         df2['cat_purchease'] = 'hygiene_beaute'
-        df2 = df2[['merge_col', 'brands_tags', 'cat_purchease']]
+        df2 = df2[['merge_col','brands_tags', 'cat_purchease']]
         return pd.concat([df1, df2], ignore_index=True)
 
     def load_and_concat(self):
