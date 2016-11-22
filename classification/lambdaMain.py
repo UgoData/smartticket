@@ -1,4 +1,3 @@
-import json
 import warnings
 
 from loadAndCleanData import LoadCleanData
@@ -16,7 +15,7 @@ l = LoadCleanData()
 u = Normalizer()
 
 # Load data for test
-event = json.load(open("../data/smart-tickets-payload-example.json", "rb"))
+# event = json.load(open("../data/smart-tickets-payload-example.json", "rb"))
 
 
 # print input
@@ -26,5 +25,4 @@ def eventHandler(event, context):
     ll = LoadPurchease(event)
     return ll.fill_input_with_classif(event)
 
-
-print eventHandler(event, 'a')
+# print eventHandler(event, 'a')

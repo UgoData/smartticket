@@ -4,16 +4,18 @@
 import cPickle as pickle
 import warnings
 
+import boto3
+
 from tfidf_classification import Classification
 from utilNormalizer import Normalizer
 
 print "INTO load purchease"
 
-# client = boto3.client('s3', region_name="eu-west-1")
-# tfidfp = client.get_object(Bucket='smartticket-analytics', Key='dumpTfIdf.pkl')
-# tf_idf_load_from_pickle = pickle.loads(tfidfp['Body'].read())
-# rfp = client.get_object(Bucket='smartticket-analytics', Key='dumpRf.pkl')
-# rf_load_from_pickle = pickle.loads(rfp['Body'].read())
+client = boto3.client('s3', region_name="eu-west-1")
+tfidfp = client.get_object(Bucket='smartticket-analytics', Key='dumpTfIdf.pkl')
+tf_idf_load_from_pickle = pickle.loads(tfidfp['Body'].read())
+rfp = client.get_object(Bucket='smartticket-analytics', Key='dumpRf.pkl')
+rf_load_from_pickle = pickle.loads(rfp['Body'].read())
 
 
 warnings.filterwarnings("ignore")
@@ -24,9 +26,9 @@ warnings.filterwarnings("ignore")
 u = Normalizer()
 
 # Load TF-IDF
-tf_idf_load_from_pickle = pickle.load(open("../models/dumpTfIdf.pkl", "rb"))
+# tf_idf_load_from_pickle = pickle.load(open("../models/dumpTfIdf.pkl", "rb"))
 # Load Random Forest
-rf_load_from_pickle = pickle.load(open("../models/dumpRf.pkl", "rb"))
+# rf_load_from_pickle = pickle.load(open("../models/dumpRf.pkl", "rb"))
 
 
 class LoadPurchease:
@@ -55,11 +57,8 @@ class LoadPurchease:
         """
         dict_prod = self.extract_description(input_json)
         list_prod = u.from_dict_to_list(dict_prod)
-        print "list_prod :", list_prod
-        t = Classification(list_prod)
-        print tf_idf_load_from_pickle
-        print rf_load_from_pickle
-        result = t.tfidf_rf_classif_apply(tf_idf_load_from_pickle, rf_load_from_pickle)
+        t = Classification()
+        result = t.tfidf_rf_classif_apply(tf_idf_load_from_pickle, rf_load_from_pickle, list_prod)
         return u.from_two_lists_to_dict(list_prod, result)
 
     def fill_input_with_classif(self, input_json):

@@ -19,8 +19,8 @@ l = LoadCleanData()
 
 
 class Classification:
-    def __init__(self, input):
-        self.input = input
+    def __init__(self):
+        self
 
     @staticmethod
     def load_data():
@@ -52,11 +52,8 @@ class Classification:
             cPickle.dump(rf, file1)
         print ("Random Forest saved")
 
-    def tfidf_rf_classif_apply(self, tf_idf_load_from_pickle, rf_load_from_pickle):
-        print self.input
-        print type(self.input)
-        tf_idf_trans = tf_idf_load_from_pickle.transform(self.input)
-        print type(tf_idf_trans)
+    def tfidf_rf_classif_apply(self, tf_idf_load_from_pickle, rf_load_from_pickle, list_input):
+        tf_idf_trans = tf_idf_load_from_pickle.transform(list_input)
         return rf_load_from_pickle.predict(tf_idf_trans)
 
     def save_pickles(self, X_df, y):
