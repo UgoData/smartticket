@@ -42,6 +42,11 @@ class LoadPurchease:
         :param input: json input from pruchease
         :return: dictionary with key equals to production description
         """
+        ### TEST ###
+        print "TEST"
+        print type(input_json['store_address'])
+        print input_json['store_address']['street_number']
+
         dict_description = {}
         for line in input_json['lines']:
             if line['ocr_processed_description'] != "":
@@ -66,7 +71,6 @@ class LoadPurchease:
         output = {}
         output['analytics_result'] = 'FAILURE'
         output['smartticket'] = input_json
-        print 'Classification made by RMW : ', dict_class
         for line in input_json['lines']:
             if line['ocr_processed_description'] != "":
                 if dict_class[line['ocr_processed_description']] <> line['category_name']:
