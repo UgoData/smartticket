@@ -60,9 +60,3 @@ class Classification:
         # Results have been saved into result_gridsearch.json
         # Best parameters are : tfidf__min_df=0.0005 and rf__min_samples_leaf=1
 
-# c = Classification(['pain maxi burger', 'HAR. VERT XF'])
-# X_df, y = c.load_data()
-
-# c.save_pickles(X_df, y)
-
-# print c.tfidf_rf_classif_apply(tf_idf_load_from_pickle, rf_load_from_pickle)

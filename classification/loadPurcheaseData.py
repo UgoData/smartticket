@@ -39,14 +39,9 @@ class LoadPurchease:
         """
         Extraction of the description of the products.
         If ocr processed is not empty then it is a key else we use ocr raw
-        :param input: json input from pruchease
+        :param input: json input from purchease
         :return: dictionary with key equals to production description
         """
-        ### TEST ###
-        print "TEST"
-        print type(input_json['store_address'])
-        print input_json['store_address']['street_number']
-
         dict_description = {}
         for line in input_json['lines']:
             if line['ocr_processed_description'] != "":
@@ -67,22 +62,33 @@ class LoadPurchease:
         return u.from_two_lists_to_dict(list_prod, result)
 
     def fill_input_with_classif(self, input_json):
+        """
+        Create a json with purchease classification and rmw classification
+        :param input_json: json from purchease classification
+        :return:
+        """
         dict_class = self.classification_homemade(input_json)
-        output = {}
-        output['analytics_result'] = 'FAILURE'
-        output['smartticket'] = input_json
+        output = {'analytics_result': 'FAILURE', 'smartticket': input_json}
         for line in input_json['lines']:
-            if line['ocr_processed_description'] != "":
-                if dict_class[line['ocr_processed_description']] <> line['category_name']:
-                    output['analytics_result'] = 'SUCCESS'
-                    line['category_name'] = dict_class[line['ocr_processed_description']].upper()
-                    # TODO : change category_image_url too
+            # Creation of a purchease category
+            line['category_name_purchease'] = line['category_name']
+            # Creation of a rmw category
+            if (line['ocr_processed_description'] != ""):
+                line['category_name_rmw'] = dict_class[line['ocr_processed_description']].upper()
             else:
-                if dict_class[line['ocr_raw_description']] <> line['category_name']:
+                line['category_name_rmw'] = dict_class[line['ocr_raw_description']].upper()
+            if (line['category_name'] == 'NON RECONNU') and (line['category_name'] <> line['category_name_rmw']):
                     output['analytics_result'] = 'SUCCESS'
-                    line['category_name'] = dict_class[line['ocr_raw_description']].upper()
+                    line['category_name'] = line['category_name_rmw']
                     # TODO : change category_image_url too
         return output
+
+    def good_shape_output_for_post(self, input_json):
+        output = input_json.copy()
+        for line in input_json['lines']:
+            del line['category_name_purchease']
+            del line['category_name_rmw']
+        return
 
         # l = LoadPurchease(input)
         # print l.fill_input_with_classif()

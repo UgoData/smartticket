@@ -4,6 +4,7 @@
 import cPickle
 import warnings
 
+import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -34,7 +35,7 @@ class Classification:
         return X_df, y
 
     def tfidf_learning(self, X_df):
-        vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5, min_df=0.005, ngram_range=(1, 2))
+        vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5)
         return vectorizer.fit(X_df)
 
     def rf_learning(self, X_df, y, tf_idf):
@@ -56,13 +57,20 @@ class Classification:
         tf_idf_trans = tf_idf_load_from_pickle.transform(list_input)
         return rf_load_from_pickle.predict(tf_idf_trans)
 
+    def get_features_importance(self, model, X, tfidf_dict):
+        importances = model.feature_importances_
+        std = np.std([tree.feature_importances_ for tree in model.estimators_],
+                     axis=0)
+        indices = np.argsort(importances)[::-1]
+
+        # Print the feature ranking
+        print("Feature ranking:")
+
+        for f in range(X.shape[1]):
+            print("%d. feature %s (%f)" % (
+            f + 1, tfidf_dict.keys()[tfidf_dict.values().index(indices[f])], importances[indices[f]]))
+
     def save_pickles(self, X_df, y):
         self.pickle_tfidf(self.tfidf_learning(X_df))
         self.pickle_rf(self.rf_learning(X_df, y, self.tfidf_learning(X_df)))
 
-# c = Classification(['pain maxi burger', 'HAR. VERT XF'])
-# X_df, y = c.load_data()
-
-# c.save_pickles(X_df, y)
-
-# print c.tfidf_rf_classif_apply(tf_idf_load_from_pickle, rf_load_from_pickle)

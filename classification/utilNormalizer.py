@@ -98,7 +98,7 @@ class Normalizer:
         # print 'merge_list : ', ' '.join(str1)
         return ' '.join(str2)
 
-    def simple_normalize(self,str1):
+    def simple_normalize(self, str1):
         str2= self.suppress_stopword(
                     self.suppress_punctuation(
                         self.suppress_apostrophe(
