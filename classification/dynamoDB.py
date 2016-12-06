@@ -7,8 +7,8 @@ table = boto3.resource('dynamodb').Table('analytics-smartticket')
 
 
 class AccessDB:
-    def __init__(self, json_input):
-        self.json_input = json_input
+    def __init__(self):
+        self
 
     def replace_floats(self, obj):
         if isinstance(obj, list):
@@ -45,12 +45,14 @@ class AccessDB:
             return obj
 
     def put_item_into_dynamodb(self, json_input):
-        table.put_item(Item=self.replace_floats(json_input))
-        return "Item {} saved into db", json_input['uuid']
+        print json_input
+        table.put_item(Item=self.replace_floats(json_input['smartticket']))
+        return "Item {} saved into db", json_input['smartticket']['uuid']
 
     def get_item_from_dynamodb(self):
-        smartticket = table.get_item(Key=uuid)
-        if 'Item' in smartticket:
-            return self.replace_decimals(smartticket['Item'])
+        tickets = table.scan()
+        print tickets
+        if 'Items' in tickets:
+            return self.replace_decimals(tickets['Items'])
         else:
             return None

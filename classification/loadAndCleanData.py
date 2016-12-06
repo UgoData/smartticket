@@ -23,7 +23,7 @@ class LoadCleanData:
     @staticmethod
     def load_open_food_facts():
         """ Loading the Open Food Facts data """
-        return pd.read_csv("../data/OpenFoodFacts_v2.csv", encoding="latin-1", delimiter=";")
+        return pd.read_csv("../data/OpenFoodFacts_v2 - no boissons.csv", encoding="latin-1", delimiter=";")
 
     @staticmethod
     def load_open_beauty_facts():

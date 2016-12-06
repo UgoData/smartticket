@@ -98,6 +98,18 @@ class Normalizer:
         # print 'merge_list : ', ' '.join(str1)
         return ' '.join(str2)
 
+    def end_to_end_normalize_noaccent(self, str1):
+        """ Merging process """
+        str2 = self.stemm_words(
+            self.suppress_stopword(
+                self.suppress_punctuation(
+                    self.suppress_apostrophe(
+                        self.suppress_number(
+                            self.to_lower(str1)
+                        )))))
+        # print 'merge_list : ', ' '.join(str1)
+        return ' '.join(str2)
+
     def simple_normalize(self, str1):
         str2= self.suppress_stopword(
                     self.suppress_punctuation(

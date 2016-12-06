@@ -1,12 +1,51 @@
 # -*- coding: utf-8 -*-
 import cPickle as pickle
+import sys
 
 import pandas as pd
 
+from dynamoDB import AccessDB
 from googlePlaces import GoogleApi
+from loadPurcheaseData import LoadPurchease
 from tfidf_classification import Classification
+from utilNormalizer import Normalizer
+
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 c = Classification()
+n = Normalizer()
+a = AccessDB()
+l = LoadPurchease({'est': 'fdsfg'})
+
+LIST_TO_PREDICT = [
+    'CHOCO', 'TOURNESOL MOZZARELLA', 'CHAUSSON FRUIT',
+    '6X XTREME3 P SENSI', 'TOMATE CERISE', 'POIRE',
+    'X72 LINGET EAU NET', 'Bianco, boisson aromatisée blanc',
+    # Ticket Franprix
+    'BOUTEILL 33CL J', 'PICK UP LAIT X',
+    # Ticket Auchan
+    'LOTUS CONFORT PAPIER TOILE', 'POUCE VINAIGRE ALCOOL BLAN', 'FOXY ESSUIE TOUT ABSO BLAN',
+    'PETIT NAVIRE THON NATUREL',
+    'HIPP BIO RISOTTO POULET', 'CYRIO VINAIGRE BALSAMIQUE',
+    'STEAK HACHE', 'ENTRECOTE',
+    'HERTA LARDONS FUMES'
+]
+
+EXPECTED_RESULT = [
+    'epicerie_sucree', 'produits_laitiers_lait_oeufs', 'epicerie_sucree',
+    'hygiene_beaute', 'legumes', 'fruits',
+    'hygiene_beaute', 'boissons',
+    'boissons', 'epicerie_sucree',
+    'hygiene_beaute', 'epicerie_salee',
+    'hygiene_beaute', 'poissonnerie',
+    'epicerie_salee', 'epicerie_salee',
+    'viande', 'viande',
+    'viande'
+]
+
+BOISSONS_KEYWORDS = ['BOUTEIL', 'PERRIER', 'PELLEGRINO', 'QUEZAC', 'PJ', 'JUS', 'VITTEL', 'BOISS', 'EAU', 'VIN ',
+                     'RHUM', 'WHISKY', 'CAFE', 'THE', 'COCA']
 
 
 def test_classification_via_apprentissage():
@@ -14,13 +53,36 @@ def test_classification_via_apprentissage():
     X_df, y = c.load_data()
 
     vectorizer = c.tfidf_learning(X_df)
+    X_vect = vectorizer.transform(X_df)
 
-    model = c.rf_learning(X_df, y, vectorizer)
+    model = c.rf_learning(X_vect, y)
 
-    print model.predict(vectorizer.transform(['CHOCO', 'TOURNESOL MOZZARELLA', 'CHAUSSON FRUIT'
-                                                                               '6X XTREME3 P SENSI', 'Tomates Cerises',
-                                              'poire'
-                                                 , 'X72 LINGET EAU NET', 'Bianco, boisson aromatisée blanc']))
+    list_pred = [n.end_to_end_normalize(x) for x in LIST_TO_PREDICT]
+    print list_pred
+    result_classif = model.predict(vectorizer.transform(list_pred))
+    list_result = []
+    for idx, i in enumerate(result_classif):
+        print i
+        print LIST_TO_PREDICT[idx]
+        if any(word.lower() in LIST_TO_PREDICT[idx].lower() for word in BOISSONS_KEYWORDS):
+            list_result.append('boissons')
+        else:
+            list_result.append(i)
+    return list_result
+
+
+def print_result(model_result):
+    result_precision = 1
+    len_res = len(model_result)
+    for idx, res in enumerate(model_result):
+        if EXPECTED_RESULT[idx] != res:
+            to_print = {'val': LIST_TO_PREDICT[idx], 'res': res, 'exp': EXPECTED_RESULT[idx]}
+            print 'pb with **%(val)s**: our model predict : **%(res)s** instead of **%(exp)s**' % to_print
+            result_precision -= 1 / float(len_res)
+    print 'total precision : ', result_precision
+
+
+def check_vectorizer(X_df, y, model):
 
     vectorizer = c.tfidf_learning(X_df)
     vocab = vectorizer.vocabulary_
@@ -51,14 +113,36 @@ def test_classification_via_pickle():
     # Load Random Forest
     rf_load_from_pickle = pickle.load(open("../models/dumpRf.pkl", "rb"))
 
-    print c.tfidf_rf_classif_apply(tf_idf_load_from_pickle, rf_load_from_pickle, ['CHOCO', 'TOURNESOL MOZZARELLA'])
+    return c.tfidf_rf_classif_apply(tf_idf_load_from_pickle, rf_load_from_pickle,
+                                    [n.end_to_end_normalize(x) for x in LIST_TO_PREDICT])
 
 
 def test_google_api():
     #### Test Google API
-    g = GoogleApi('churrasquera galo restaurant', '69 rue de dunkerque 75009')
-    print "Result from Google API :", g.return_only_one_category(
-        g.convert_googletypes_into_rmwtypes(g.get_place_type_from_google(g.get_place_infos())))
+    first_line, second_line = 'B.8OVY2', '5 AVENUE TRUDAINE'
+    g = GoogleApi(first_line, second_line)
+    print g.google_cat()
 
 
-test_classification_via_apprentissage()
+def create_pickles():
+    X_df, y = c.load_data()
+    c.save_pickles(X_df, y)
+
+
+def get_dynamodb_data():
+    print a.get_item_from_dynamodb()
+
+
+def get_csv_from_s3():
+    print l.get_categories_name_from_csv()
+
+
+# print_result(test_classification_via_apprentissage())
+
+# create_pickles()
+
+# get_dynamodb_data()
+
+# get_csv_from_s3()
+
+test_google_api()

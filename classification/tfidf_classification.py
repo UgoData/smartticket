@@ -35,21 +35,21 @@ class Classification:
         return X_df, y
 
     def tfidf_learning(self, X_df):
-        vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5)
+        # vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5, min_df=0.0005, ngram_range=(1, 2))
+        vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5, min_df=0.0005, ngram_range=(1, 2))
         return vectorizer.fit(X_df)
 
-    def rf_learning(self, X_df, y, tf_idf):
-        input_vect = tf_idf.transform(X_df)
-        rf = RandomForestClassifier(n_estimators=10, random_state=123, min_samples_leaf=1)
-        return rf.fit(input_vect, y)
+    def rf_learning(self, X_vect, y):
+        rf = RandomForestClassifier(n_estimators=10, random_state=123, min_samples_leaf=1, class_weight='balanced')
+        return rf.fit(X_vect, y)
 
     def pickle_tfidf(self, tf_idf):
-        with open("../models/dumpTfIdf.pkl.gz", "wb") as file1:
+        with open("../models/dumpTfIdf.pkl", "wb") as file1:
             cPickle.dump(tf_idf, file1)
         print ("TF - IDF saved")
 
     def pickle_rf(self, rf):
-        with open("../models/dumpRf.pkl.gz", "wb") as file1:
+        with open("../models/dumpRf.pkl", "wb") as file1:
             cPickle.dump(rf, file1)
         print ("Random Forest saved")
 
@@ -71,6 +71,7 @@ class Classification:
             f + 1, tfidf_dict.keys()[tfidf_dict.values().index(indices[f])], importances[indices[f]]))
 
     def save_pickles(self, X_df, y):
-        self.pickle_tfidf(self.tfidf_learning(X_df))
-        self.pickle_rf(self.rf_learning(X_df, y, self.tfidf_learning(X_df)))
-
+        vectorizer = self.tfidf_learning(X_df)
+        self.pickle_tfidf(vectorizer)
+        X_vect = vectorizer.transform(X_df)
+        self.pickle_rf(self.rf_learning(X_vect, y))

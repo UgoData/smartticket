@@ -21,7 +21,8 @@ class TestGoogleApi(TestCase):
 
     def test_convert_googletypes_into_rmwtypes(self):
         result = g.convert_googletypes_into_rmwtypes(["restaurant", "food", "point_of_interest", "establishment"])
-        self.assertEqual(result[0], 'restaurant')
+        print result
+        self.assertEqual(result[0], 'Restaurant')
         self.assertEqual(result[3], '')
 
     def test_return_only_one_category(self):
