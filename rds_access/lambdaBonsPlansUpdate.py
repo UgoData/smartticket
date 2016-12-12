@@ -8,7 +8,10 @@ d = dynamoDBPrep()
 
 
 def handler(event, context):
-    # Get dynamobd data
+    # Get dynamobd data : full info TODO replace by active flow
     input_json = ad.get_item_from_dynamodb()
-    print d.from_dynamo_to_mysql(input_json)
-    return ards.getBonsPlansInfosRow()
+    result_df = d.from_dynamo_to_mysql(input_json)
+    ards.getBonsPlansInfosRow(result_df)
+
+
+handler('', '')

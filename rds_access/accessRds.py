@@ -29,14 +29,22 @@ class AccessRDS:
     def __init__(self):
         self
 
-    def getBonsPlansInfosRow(self):
+    def getBonsPlansInfosRow(self, input):
         """
         This function fetches content from mysql RDS instance
         """
+        for i in range(input.shape[0]):
+            id_bp = input.loc[i, 'bonsplans_id']
+            cat = "[" + str(input.loc[i, 'bonsplans_id']) + "]"
+            offre_descr = input.loc[i, 'product_descr']
+            user_id = input.loc[i, 'user_id']
+            price = input.loc[i, 'price']
+            retailer = input.loc[i, 'store']
 
-        with conn.cursor() as cur:
-            cur.execute(
-                'insert into userbonsplans (analytics_category, burned, offreDesc) values("[10000]", 1, "test")')
+            with conn.cursor() as cur:
+                str_insert = 'insert into userbonsplans (analytics_category, burned, offreDesc, offreLib, userId, prix, prix_unitOff, description, source)' \
+                             ' values("%(cat)s", 1, "%(offre_descr)s", " ", "%(user_id)s", %(price)f, %(price)f, "SmartTicket", "%(retailer)s")' % vars()
+                cur.execute(str_insert)
+                conn.commit()
 
-
-AccessRDS().getBonsPlansInfosRow()
+# AccessRDS().getBonsPlansInfosRow('')
