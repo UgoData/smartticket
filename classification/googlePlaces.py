@@ -7,7 +7,7 @@ import boto3
 import pandas as pd
 import requests as r
 
-KEY_GOOGLE = 'AIzaSyAd_AwyPpw6Coc591WWqI2duRUN1E1JTGw'  # key perso Ugo
+KEY_GOOGLE = 'AIzaSyCAkWn5b-_WJ_pKauGUgIzK_FxiMOfWVBk'  # key perso Ugo
 PREFIX_QUERY_PLACE = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query='
 
 s3 = boto3.resource('s3')
@@ -21,6 +21,7 @@ class GoogleApi:
 
     def get_place_infos(self):
         query = self.retailer_name + ' ' + self.retailer_address
+        print 'QUERY TO GOOGLE :', query
         return r.get(PREFIX_QUERY_PLACE + query + '&key=' + KEY_GOOGLE).json()
 
     def get_map_google_types(self):
@@ -69,7 +70,7 @@ class GoogleApi:
         pd.merge(df_google, self.get_map_google_types(), left_on='google_names', right_on='google_type', how='left')[
             'rmw_cat'].fillna('').values
 
-    def return_only_one_category(self, list_rmw_cat):
+    def return_only_one_category(self, list_rmw_cat, google_list):
         """
         Choosing among the list the right category.
         In case of equality, alphabetic order is taken
@@ -81,22 +82,28 @@ class GoogleApi:
         print "List of the not null Google Cat :", list_rmw_cat_not_null
         if len(list_rmw_cat_not_null) > 0:
             # Remove food and store
-            list_rmw_cat_not_foodstore = [item for item in list_rmw_cat_not_null if item != ['food', 'store']]
+            list_rmw_cat_not_food = [item for item in list_rmw_cat_not_null if item not in ['food']]
+            list_rmw_cat_not_store = [item for item in list_rmw_cat_not_null if item not in ['store']]
+            if (len(list_rmw_cat_not_food) > 0) and (len(list_rmw_cat_not_store) == 0):
+                return "Magasin"
+            list_rmw_cat_not_foodstore = [item for item in list_rmw_cat_not_null if item not in ['food', 'store']]
             if len(list_rmw_cat_not_foodstore) > 0:
-                return max(set(list_rmw_cat_not_null), key=list_rmw_cat_not_null.count)
+                return max(set(list_rmw_cat_not_foodstore), key=list_rmw_cat_not_foodstore.count)
             else:
                 return 'Magasin alimentaire spécialisé'
+        elif len(list_rmw_cat) > 0:
+            print "Not enought description in Google : ", google_list
+            return "Magasin"
         else:
             return ''
 
     def google_cat_name_raw(self):
-        g = GoogleApi(self.retailer_name, self.retailer_address)
-        result_google_request = g.get_place_infos()
+        result_google_request = self.get_place_infos()
         result_google_type = []
         if result_google_request['status'] != 'ZERO_RESULTS':
-            list_cat_google = g.get_place_type_from_google(result_google_request)
-            cat_google = g.return_only_one_category(
-                g.convert_googletypes_into_rmwtypes(list_cat_google))
+            list_cat_google = self.get_place_type_from_google(result_google_request)
+            google_list_raw = self.convert_googletypes_into_rmwtypes(list_cat_google)
+            cat_google = self.return_only_one_category(google_list_raw, list_cat_google)
             if cat_google != '':
                 result_google_type.append(cat_google)
             else:
@@ -105,3 +112,6 @@ class GoogleApi:
             print "No results in Google Places for :", self.retailer_name + " " + self.retailer_address
         goog_res_raw = self.get_raw_from_google(result_google_request)
         return result_google_type, goog_res_raw
+
+        # g = GoogleApi('Kyushu',"")
+        # print g.google_cat_name_raw()

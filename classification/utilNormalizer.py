@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import decimal
 import re
 import unicodedata
 from collections import OrderedDict
@@ -142,3 +143,37 @@ class Normalizer:
         for pos, k in enumerate(list_key):
             dict_result[k] = list_value[pos]
         return dict_result
+
+    def replace_floats(self, obj):
+        if isinstance(obj, list):
+            for i in xrange(len(obj)):
+                obj[i] = self.replace_floats(obj[i])
+            return obj
+        elif isinstance(obj, dict):
+            for k in obj.iterkeys():
+                obj[k] = self.replace_floats(obj[k])
+            return obj
+        elif isinstance(obj, float):
+            if obj % 1 == 0:
+                return int(obj)
+            else:
+                return decimal.Decimal(str(obj))
+        else:
+            return obj
+
+    def replace_decimals(self, obj):
+        if isinstance(obj, list):
+            for i in xrange(len(obj)):
+                obj[i] = self.replace_decimals(obj[i])
+            return obj
+        elif isinstance(obj, dict):
+            for k in obj.iterkeys():
+                obj[k] = self.replace_decimals(obj[k])
+            return obj
+        elif isinstance(obj, decimal.Decimal):
+            if obj % 1 == 0:
+                return int(obj)
+            else:
+                return float(obj)
+        else:
+            return obj

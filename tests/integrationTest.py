@@ -15,6 +15,7 @@ sys.setdefaultencoding('utf8')
 
 c = Classification()
 n = Normalizer()
+# TODO : create context
 a = AccessDB()
 l = LoadPurchease({'est': 'fdsfg'})
 

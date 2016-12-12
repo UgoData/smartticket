@@ -2,6 +2,7 @@
 
 # ------ IMPORTS -----
 import cPickle as pickle
+import json
 import re
 import warnings
 
@@ -19,6 +20,7 @@ tf_idf_load_from_pickle = pickle.loads(tfidfp['Body'].read())
 rfp = client.get_object(Bucket='smartticket-analytics', Key='dumpRf.pkl')
 rf_load_from_pickle = pickle.loads(rfp['Body'].read())
 class_client = client.get_object(Bucket='smartticket-analytics', Key='categories.csv')
+cat_raw_2 = class_client['Body'].read()
 
 
 warnings.filterwarnings("ignore")
@@ -90,7 +92,7 @@ class LoadPurchease:
         """
         dict_class = self.classification_homemade(input_json)
         output = {'analytics_result': 'FAILURE', 'smartticket': input_json}
-        df_classification = self.get_categories_name_from_csv()
+        df_classification = self.get_categories_name_from_csv(cat_raw_2)
         if dict_class != {}:
             for line in input_json['lines']:
                 # Creation of a purchease category
@@ -118,11 +120,11 @@ class LoadPurchease:
         for line in output['smartticket']['lines']:
             del line['category_name_purchease']
             del line['category_name_rmw']
-        return output
+        output = u.replace_decimals(output)
+        return json.dumps(output)
 
-    def get_categories_name_from_csv(self):
+    def get_categories_name_from_csv(self, cat_raw_2):
         """ return df from a csv located ni s3"""
-        cat_raw_2 = class_client['Body'].read()
         line = re.split('\n', cat_raw_2)
         data = []
         for i in line:

@@ -2,11 +2,11 @@
 
 # ------ IMPORTS -----
 import cPickle as pickle
+import re
 from time import gmtime, strftime
 
 import boto3
 import pandas as pd
-import re
 import sklearn.metrics as m
 from sklearn.model_selection import cross_val_score
 
@@ -15,6 +15,7 @@ from tfidf_classification import Classification
 from utilNormalizer import Normalizer
 from utils_csv import UnicodeWriter, Utils
 
+# TODO : create context
 a = AccessDB()
 c = Classification()
 n = Normalizer()

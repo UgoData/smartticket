@@ -58,26 +58,29 @@ event = {
     'user_uuid': 'mtb8@mtb.com'
 }
 
-r = RawTreatment(event)
+r = RawTreatment()
 
 
 class TestRawTreatment(TestCase):
-    def test_extract_first_lines(self):
+    def test_extract_first_lines(self, event):
         self.assertEqual(r.extract_first_lines(), ['01.49.35.88.70', 'SAV 01.75.62.26.04'])
 
     def test_extract_phone_number(self):
         # Normal phone number
         line_descr = '01.49.35.88.70'
-        self.assertEqual(r.extract_phone_number(line_descr), '0149358870')
+        self.assertEqual(r.extract_phone_number(line_descr), '01.49.35.88.70')
         # Normal phone number
         line_descr = '0149358870'
-        self.assertEqual(r.extract_phone_number(line_descr), '0149358870')
+        self.assertEqual(r.extract_phone_number(line_descr), '01.49.35.88.70')
         # TEL
         line_descr = 'TEL : 0149358870'
-        self.assertEqual(r.extract_phone_number(line_descr), '0149358870')
+        self.assertEqual(r.extract_phone_number(line_descr), '01.49.35.88.70')
         # TELR
         line_descr = 'TELR01493588A70'
-        self.assertEqual(r.extract_phone_number(line_descr), '0149358870')
+        self.assertEqual(r.extract_phone_number(line_descr), '01.49.35.88.70')
+        # Wrong number
+        line_descr = 'Date: 20/07/2016 16:34 Nb Article: 2'
+        self.assertEqual(r.extract_phone_number(line_descr), '')
 
     def test_extract_phone_number_from_lines(self):
         lines = event['lines']

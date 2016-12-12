@@ -1,0 +1,63 @@
+service : smartticket-analytics
+
+provider:
+    name : aws
+    runtime : python2.7
+    iamRoleStatement :
+      - Effect: Allow
+        Action :
+          - dynamodb:*
+          - lambda:*
+          - s3:*
+        Resource :
+          - "arn:aws:dynamodb:eu-west-1:*:*"
+          - "arn:aws:lambda:eu-west-1:*:*"
+
+custom:
+  stageVariables:
+    table_name: ${opt:stage}-analytics-smarttickets
+    stage: ${opt:stage}
+
+plugins:
+  - serverless-plugin-stage-variables
+
+package:
+  individually: true
+
+functions:
+    LOCATION :
+      name : ${opt:stage}-smartticket-location
+      handler : lambdaEnrichLocation.eventHandler
+      timeout : 120
+      memorySize : 256
+      package:
+        artifact: Target/SmartTicket_Pandas_Linux/smartticket_location_infos.zip
+
+
+    CLASSIFY :
+      name : ${opt:stage}-classify-smartticket
+      handler : lambdaMain.eventHandler
+      timeout : 250
+      memorySize : 1024
+      events:
+        - http:
+            path : analytics/smarttickets
+            method : post
+      package:
+        artifact: Target/SmartTicket_Analytics_Linux/smartticket_analytics.zip
+
+resources:
+  Resources:
+    analyticsdynamodb:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.stageVariables.table_name}
+        AttributeDefinitions:
+          - AttributeName: uuid
+            AttributeType: S
+        KeySchema:
+          - AttributeName: uuid
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 2
+          WriteCapacityUnits: 2
