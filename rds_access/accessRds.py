@@ -2,6 +2,7 @@ import logging
 import sys
 
 import pymysql
+import hashlib
 
 import rds_config
 
@@ -34,17 +35,19 @@ class AccessRDS:
         This function fetches content from mysql RDS instance
         """
         for i in range(input.shape[0]):
-            id_bp = input.loc[i, 'bonsplans_id']
-            cat = "[" + str(input.loc[i, 'bonsplans_id']) + "]"
-            offre_descr = input.loc[i, 'product_descr']
-            user_id = input.loc[i, 'user_id']
-            price = input.loc[i, 'price']
-            retailer = input.loc[i, 'store']
+            if input.loc[i, 'user_id'] == 'mtb2':
+                id_bp = input.loc[i, 'bonsplans_id']
+                cat = "[" + str(input.loc[i, 'bonsplans_id']) + "]"
+                offre_descr = input.loc[i, 'product_descr']
+                user_id = input.loc[i, 'user_id']
+                price = input.loc[i, 'price']
+                retailer = input.loc[i, 'store']
+                prod_id = hashlib.sha224(offre_descr).hexdigest()
 
-            with conn.cursor() as cur:
-                str_insert = 'insert into userbonsplans (analytics_category, burned, offreDesc, offreLib, userId, prix, prix_unitOff, description, source)' \
-                             ' values("%(cat)s", 1, "%(offre_descr)s", " ", "%(user_id)s", %(price)f, %(price)f, "SmartTicket", "%(retailer)s")' % vars()
-                cur.execute(str_insert)
-                conn.commit()
+                with conn.cursor() as cur:
+                    str_insert = 'insert into userbonsplans (analytics_category, burned, offreDesc, offreLib, userId, prix, prix_unitOff, description, source, id)' \
+                                 ' values("%(cat)s", 1, "%(offre_descr)s", " ", "%(user_id)s", %(price)f, %(price)f, "SmartTicket", "%(retailer)s", "%(prod_id)s")' % vars()
+                    cur.execute(str_insert)
+                    conn.commit()
 
 # AccessRDS().getBonsPlansInfosRow('')
