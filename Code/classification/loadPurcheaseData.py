@@ -3,14 +3,14 @@
 # ------ IMPORTS -----
 import cPickle as pickle
 import json
-import re
-import warnings
 
 import boto3
 import pandas as pd
+import re
+import warnings
 
-from tfidf_classification import Classification
-from utilNormalizer import Normalizer
+from Code.Utils.utilNormalizer import Normalizer
+from tfidfClassification import Classification
 
 print "INTO load purchease"
 
@@ -19,6 +19,8 @@ tfidfp = client.get_object(Bucket='smartticket-analytics', Key='dumpTfIdf.pkl')
 tf_idf_load_from_pickle = pickle.loads(tfidfp['Body'].read())
 rfp = client.get_object(Bucket='smartticket-analytics', Key='dumpRf.pkl')
 rf_load_from_pickle = pickle.loads(rfp['Body'].read())
+pipeline = client.get_object(Bucket='smartticket-analytics', Key='dumpPipeline.pkl')
+pipeline_load_from_pickle = pickle.loads(pipeline['Body'].read())
 class_client = client.get_object(Bucket='smartticket-analytics', Key='categories.csv')
 cat_raw_2 = class_client['Body'].read()
 
@@ -36,7 +38,7 @@ u = Normalizer()
 # rf_load_from_pickle = pickle.load(open("../models/dumpRf.pkl", "rb"))
 
 BOISSONS_KEYWORDS = ['BOUTEIL', 'PERRIER', 'PELLEGRINO', 'QUEZAC', 'PJ', 'JUS', 'VITTEL', 'BOISS', 'EAU', 'VIN ',
-                     'RHUM', 'WHISKY', 'CAFE', 'THE', 'COCA']
+                     'RHUM', 'WHISKY', 'CAFE', 'THE', 'COCA'] # not uses anymore
 
 
 class LoadPurchease:
@@ -84,13 +86,32 @@ class LoadPurchease:
         else:
             return {}
 
+    def classification_homemade_v2(self, input_json):
+        """
+        Classify the products description into a dictionary.
+        From the first 5000 classifications of Purchease, we retrain the model
+        :return: dictionary key: description value : rmw category
+        """
+        dict_prod = self.extract_description(input_json)
+
+        if len(dict_prod) > 0:
+            list_prod = u.from_dict_to_list(dict_prod)
+            list_prod_2 = [re.compile('[^\D]').sub('', x.lower()) for x in list_prod]
+            result = pipeline_load_from_pickle.predict(list_prod_2)
+            list_result = []
+            for idx, i in enumerate(result):
+                list_result.append(i)
+            return u.from_two_lists_to_dict(list_prod, list_result)
+        else:
+            return {}
+
     def fill_input_with_classif(self, input_json):
         """
         Create a json with purchease classification and rmw classification
         :param input_json: json from purchease classification
         :return:
         """
-        dict_class = self.classification_homemade(input_json)
+        dict_class = self.classification_homemade_v2(input_json)
         output = {'analytics_result': 'FAILURE', 'smartticket': input_json}
         df_classification = self.get_categories_name_from_csv(cat_raw_2)
         if dict_class != {}:
@@ -100,12 +121,12 @@ class LoadPurchease:
                 # Creation of a rmw category
                 if (line['ocr_processed_description'] != ""):
                     print dict_class[line['ocr_processed_description']]
-                    line['category_name_rmw'] = self.from_rmwname_to_purcheaseinfos(df_classification, dict_class[
-                        line['ocr_processed_description']], 'name_rmw', 'name_purchease')
+                    # line['category_name_rmw'] = self.from_rmwname_to_purcheaseinfos(df_classification, dict_class[
+                    #     line['ocr_processed_description']], 'name_rmw', 'name_purchease')
+                    line['category_name_rmw'] = dict_class[line['ocr_processed_description']]
                 else:
                     print dict_class[line['ocr_raw_description']]
-                    line['category_name_rmw'] = self.from_rmwname_to_purcheaseinfos(df_classification, dict_class[
-                        line['ocr_raw_description']], 'name_rmw', 'name_purchease')
+                    line['category_name_rmw'] = dict_class[line['ocr_raw_description']]
                 if (line['category_name'] == 'NON RECONNU') and (line['category_name'] <> line['category_name_rmw']):
                     output['analytics_result'] = 'SUCCESS'
                     line['category_name'] = line['category_name_rmw']
@@ -133,7 +154,6 @@ class LoadPurchease:
         return pd.DataFrame(data, columns=['name_rmw', 'name_purchease', 'img'])
 
     def from_rmwname_to_purcheaseinfos(self, df, rmw_name, col_to_check, col_to_get):
-        print df.loc[df[col_to_check] == rmw_name][col_to_get]
         return df.loc[df[col_to_check] == rmw_name][col_to_get].iloc[0]
 
         # l = LoadPurchease(input)

@@ -20,6 +20,11 @@ l = LoadCleanData()
 
 
 class Classification:
+    """
+    TFIDF methods
+    Classification methods
+    Creation of the pickles
+    """
     def __init__(self):
         self
 

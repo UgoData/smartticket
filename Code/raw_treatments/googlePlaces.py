@@ -7,7 +7,7 @@ import boto3
 import pandas as pd
 import requests as r
 
-KEY_GOOGLE = 'AIzaSyCAkWn5b-_WJ_pKauGUgIzK_FxiMOfWVBk'  # key perso Ugo
+KEY_GOOGLE = 'AIzaSyC7xlB5DRTXXRbAdKIGzggf4xy9rFquxlY'  # key perso Antonio
 PREFIX_QUERY_PLACE = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query='
 
 s3 = boto3.resource('s3')

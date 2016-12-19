@@ -1,6 +1,6 @@
-from accessRds import AccessRDS
-from dynamoDB import AccessDB
-from dynamoDBDataPrep import dynamoDBPrep
+from Code.db_access.accessRds import AccessRDS
+from Code.db_access.dynamoDB import AccessDB
+from Code.db_access.dynamoDBDataPrep import dynamoDBPrep
 
 ards = AccessRDS()
 ad = AccessDB()

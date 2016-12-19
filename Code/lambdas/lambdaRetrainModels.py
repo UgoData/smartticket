@@ -2,18 +2,18 @@
 
 # ------ IMPORTS -----
 import cPickle as pickle
-import re
 from time import gmtime, strftime
 
 import boto3
 import pandas as pd
+import re
 import sklearn.metrics as m
 from sklearn.model_selection import cross_val_score
+from utilCsv import UnicodeWriter, Utils
 
-from dynamoDB import AccessDB
-from tfidf_classification import Classification
-from utilNormalizer import Normalizer
-from utils_csv import UnicodeWriter, Utils
+from Code.Utils.utilNormalizer import Normalizer
+from Code.db_access.dynamoDB import AccessDB
+from tfidfClassification import Classification
 
 # TODO : create context
 a = AccessDB()
@@ -28,7 +28,7 @@ tf_idf_load_from_pickle = pickle.loads(tfidfp['Body'].read())
 rfp = client.get_object(Bucket='smartticket-analytics', Key='dumpRf.pkl')
 rf_load_from_pickle = pickle.loads(rfp['Body'].read())
 
-table = boto3.resource('dynamodb').Table('analytics-smartticket')
+table = boto3.resource('dynamodb').Table('prod-analytics-smarttickets')
 classif_result = s3.Object(bucket_name='smartticket-analytics', key='classif_results.csv')
 
 
@@ -116,7 +116,7 @@ class retrainModel:
         old_results_vs_purchease_results = m.accuracy_score(df_res['purchease_cat'], df_res['rmw_cat'])
         print "Old results compare to Purchease results : %s" % old_results_vs_purchease_results
 
-    def if_better_create_pickle(self, df_res):
+    def if_better_create_pickle(self, df_res, X_df, y):
         if self.get_old_model_score(df_res) < self.get_score_new_model(df_res):
             c.pickle_tfidf(self.tfidf_learning(X_df))
             c.pickle_rf(self.rf_learning(X_df, y, self.tfidf_learning(X_df)))
@@ -127,7 +127,8 @@ class retrainModel:
 
 
 r = retrainModel()
-df = r.get_classif_results_from_csv()
-old_model = r.get_old_model_score(df)
-new_model = r.get_score_new_model(df)
-r.print_score_sumup(old_model, new_model, df)
+r.db_to_df().to_csv("results_stocked_2.csv", sep=";", encoding='utf-8')
+# df = r.get_classif_results_from_csv()
+# old_model = r.get_old_model_score(df)
+# new_model = r.get_score_new_model(df)
+# r.print_score_sumup(old_model, new_model, df)

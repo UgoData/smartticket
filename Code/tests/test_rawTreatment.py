@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from rawTreatment import RawTreatment
+from Code.raw_treatments.rawTreatment import RawTreatment
 
 event = {
     'status': 'finished',

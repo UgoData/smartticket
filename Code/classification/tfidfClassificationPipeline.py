@@ -18,6 +18,7 @@ l = LoadCleanData()
 
 
 class Classification:
+    """ Pipeline Tf-Idf, Classification: with grid search to find the best parameters"""
     def __init__(self, input):
         self.input = input
 
@@ -48,6 +49,9 @@ class Classification:
         return model.fit(X_df, y), model.cv_results_
 
     def rf_pipeline_classif_gridsearch(self):
+        """
+        :return: Cross val results
+        """
         # Load all dataset
         df = l.load_and_concat()
 

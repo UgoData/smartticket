@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+""" Utilities for french text data """
+
 import decimal
 import re
 import unicodedata
@@ -100,7 +102,10 @@ class Normalizer:
         return ' '.join(str2)
 
     def end_to_end_normalize_noaccent(self, str1):
-        """ Merging process """
+        """
+        Merge processing without stemming
+        lower, no_number, no_apostrophe, no_punctuation, no_stopword, stemming
+        """
         str2 = self.stemm_words(
             self.suppress_stopword(
                 self.suppress_punctuation(
@@ -112,6 +117,10 @@ class Normalizer:
         return ' '.join(str2)
 
     def simple_normalize(self, str1):
+        """
+        Merge processing without stemming
+        lower, no_number, no_apostrophe, no_punctuation, no_stopword
+        """
         str2= self.suppress_stopword(
                     self.suppress_punctuation(
                         self.suppress_apostrophe(
@@ -133,18 +142,21 @@ class Normalizer:
         return self.clean_duplicate_string(res)
 
     def from_dict_to_list(self, dict):
+        """ Make a list of dictionnary keys"""
         list_result = []
         for k in dict.keys():
             list_result.append(k)
         return list_result
 
     def from_two_lists_to_dict(self, list_key, list_value):
+        """ From two list make a dictionnary"""
         dict_result = {}
         for pos, k in enumerate(list_key):
             dict_result[k] = list_value[pos]
         return dict_result
 
     def replace_floats(self, obj):
+        """ Replace floats by decimal. Method need for handling json """
         if isinstance(obj, list):
             for i in xrange(len(obj)):
                 obj[i] = self.replace_floats(obj[i])
@@ -162,6 +174,7 @@ class Normalizer:
             return obj
 
     def replace_decimals(self, obj):
+        """ Replace decimals by floats. Method needed for handling json """
         if isinstance(obj, list):
             for i in xrange(len(obj)):
                 obj[i] = self.replace_decimals(obj[i])

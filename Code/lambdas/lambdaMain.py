@@ -1,13 +1,14 @@
+# coding=utf-8
 import json
-import warnings
 
 import boto3
+import warnings
 
-from dynamoDB import AccessDB
+from Code.Utils.utilNormalizer import Normalizer
+from Code.db_access.dynamoDB import AccessDB
 from loadAndCleanData import LoadCleanData
 from loadPurcheaseData import LoadPurchease
 from processTextData import ProcessText
-from utilNormalizer import Normalizer
 
 warnings.filterwarnings("ignore")
 
@@ -79,46 +80,3 @@ def replace_empty_string(obj):
             return obj
     else:
         return obj
-
-        # event = {
-        # 	'status': 'finished',
-        # 	'extraction_type': 'STRUCTURED',
-        # 	'total': 36.14,
-        # 	'uuid': '20161109-0959-9752-402881196-1',
-        # 	'retailer_name': 'Carrefour',
-        # 	'lines': [{
-        # 			'total_price': 7.1,
-        # 			'ocr_processed_description': 'CHAUSSON FRUIT',
-        # 			'unit_price': 3.05,
-        # 			'ocr_raw_description': 'CHAOSSON FROIT',
-        # 			'category_image_url': 'http://cdn1.skerou.com/images/products/skerou_created/unknown_product.png',
-        # 			'quantity': 2,
-        # 			'category_name': 'NON RECONNU'
-        # 		}, {
-        # 			'total_price': 1.59,
-        # 			'ocr_processed_description': 'BOUTEILLE 33CL',
-        # 			'unit_price': 1.59,
-        # 			'ocr_raw_description': 'BOUTEILLE 33CL',
-        # 			'category_image_url': 'http://cdn1.skerou.com/images/products/skerou_created/unknown_product.png',
-        # 			'quantity': 1,
-        # 			'category_name': 'NON RECONNU'
-        # 		}
-        # 	],
-        # 	'retailer_image_url': 'http://cdn1.skerou.com/images/retailers/carrefour.png',
-        # 	'date': '09-11-2016 09:59',
-        # 	'nb_products': 7,
-        # 	'nb_recognized_products': 0,
-        # 	'store_address': {
-        # 		'city': 'Paris',
-        # 		'street_number': '150',
-        # 		'longitude': '3.234567890987654',
-        # 		'street': 'rue du Faubourg Poissonniere',
-        # 		'latitude': '2.2345678909876543',
-        # 		'zip_code': '75010'
-        # 	},
-        # 	'light_image_url': 'http://receipts.fidmarques.com/receipts/production/21/2016/11/09/20161109-0959-9752-402881196-1/20161109-0959-9752-402881196-1_prerotated.jpg',
-        # 	'user_uuid': '123456789'
-        # }
-        #
-        #
-        # print eventHandler(event, '')

@@ -3,7 +3,7 @@
 # ------ IMPORTS -----
 import warnings
 
-from utilNormalizer import Normalizer
+from Code.Utils.utilNormalizer import Normalizer
 
 print "INTO PROCESS DATA"
 

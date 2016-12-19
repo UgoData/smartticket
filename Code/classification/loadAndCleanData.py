@@ -1,13 +1,17 @@
 # coding: utf-8
 
+"""
+The overall objective of this class is to load and clean the Open Food Fact data.
+By the way, this data are not used anymore because the results were not good and know we can learn from Purchease results
+"""
+
 # ------ IMPORTS -----
 import warnings
-
+warnings.filterwarnings("ignore")
 import pandas as pd
 
-warnings.filterwarnings("ignore")
-
 print 'INTO LOAD DATA'
+
 
 class LoadCleanData:
 
@@ -30,7 +34,7 @@ class LoadCleanData:
         """ Loading the Open Beauty Facts data """
         return pd.read_csv("../data/fr.openbeautyfacts.org.products.csv", encoding="latin-1", sep='\t')
 
-    # ------ DISCOVER DATA -------
+# ------ DISCOVER DATA -------
     @staticmethod
     def shape_df(df):
         """ Shape of a dataframe"""
@@ -70,7 +74,7 @@ class LoadCleanData:
             df_temp[col].fillna('', inplace=True)
         return df_temp
 
-    # ------ PROCESSING -------
+# ------ PROCESSING -------
     def load_clean_data(self):
         """ Load and clean the data for Food and Beauty"""
         df_open_ff_raw = self.load_open_food_facts()
@@ -89,10 +93,12 @@ class LoadCleanData:
         return pd.concat([df1, df2], ignore_index=True)
 
     def load_and_concat(self):
+        """ Concatenate the Open Food Fact and the Open Beauty Fact"""
         return self.concat_dfs(self.load_clean_data()[0], self.load_clean_data()[1])
 
-    # ------ PRINT -------
+# ------ PRINT -------
     def print_outputs(self):
+        """ Print the principal informations about the data"""
         df_classes = self.load_classes()
         df_open_ff, df_open_bf = self.load_clean_data()
 

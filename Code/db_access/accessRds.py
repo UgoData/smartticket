@@ -1,8 +1,8 @@
+import hashlib
 import logging
 import sys
 
 import pymysql
-import hashlib
 
 import rds_config
 

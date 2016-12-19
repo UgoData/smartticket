@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from unittest import TestCase
 
-from utilNormalizer import Normalizer
+from Code.Utils.utilNormalizer import Normalizer
 
 n = Normalizer()
 class TestNormalizer(TestCase):

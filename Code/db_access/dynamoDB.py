@@ -1,17 +1,17 @@
 import boto3
 
-from utilNormalizer import Normalizer
+from Code.Utils.utilNormalizer import Normalizer
 
 n = Normalizer()
 
 
 class AccessDB:
-    # def __init__(self, context_execut):
-    #     table_name = context_execut['table_name']
-    #     self.table = boto3.resource('dynamodb').Table(table_name)
+    def __init__(self, context_execut):
+        table_name = context_execut['table_name']
+        self.table = boto3.resource('dynamodb').Table(table_name)
 
-    def __init__(self):
-        self.table = boto3.resource('dynamodb').Table('prod-analytics-smarttickets')
+    # def __init__(self):
+    #     self.table = boto3.resource('dynamodb').Table('test-analytics-smarttickets')
 
     def put_item_into_dynamodb(self, json_input):
         print json_input

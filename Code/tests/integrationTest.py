@@ -4,11 +4,11 @@ import sys
 
 import pandas as pd
 
-from dynamoDB import AccessDB
-from googlePlaces import GoogleApi
+from Code.Utils.utilNormalizer import Normalizer
+from Code.raw_treatments.googlePlaces import GoogleApi
+from Code.db_access.dynamoDB import AccessDB
 from loadPurcheaseData import LoadPurchease
-from tfidf_classification import Classification
-from utilNormalizer import Normalizer
+from tfidfClassification import Classification
 
 reload(sys)
 sys.setdefaultencoding('utf8')

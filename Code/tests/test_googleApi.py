@@ -2,7 +2,7 @@
 import json
 from unittest import TestCase
 
-from googlePlaces import GoogleApi
+from Code.raw_treatments.googlePlaces import GoogleApi
 
 g = GoogleApi('b boyz', '5 avenue trudaine 75009')
 json_google = json.load(open("data_test/test_json_apigoogle.json", "rb"))
